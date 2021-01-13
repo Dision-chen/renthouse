@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 import pymysql
-import re
 
 
 app = Flask(__name__)
@@ -9,11 +8,14 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     """定义视图函数"""
-    global city
-    keyword = request.args.get('city')  # 获取城市
-    if keyword:
-        ret = re.match(r'[^?]+', keyword)
-        city = ret.group()
+    global city, money, money1, money2
+    city = request.args.get('city')  # 获取城市
+    price = request.args.get('price')  # 获取价格
+    if price:
+        money = price.split('?')[0]
+        if money:
+            money1 = money.split('-')[0]
+            money2 = money.split('-')[1]
     return app.send_static_file('index.html')  # 默认页面
 
 
@@ -28,7 +30,11 @@ def get_houses_db():
                          cursorclass=pymysql.cursors.DictCursor)  # 连接数据库 将结果作为字典返回
     try:
         with db.cursor() as cursor:  # 开启游标
-            sql = '''SELECT url,address,money FROM houses WHERE url like "%%%s%%";''' % city  # sql语句拿数据
+            if money:
+                sql = '''SELECT url,address,money FROM houses WHERE url like "%%%s%%" and money between "%s" and 
+                "%s";''' % (city, money1, money2)  # sql语句拿数据
+            else:
+                sql = '''SELECT url,address,money FROM houses WHERE url like "%%%s%%";''' % city
             cursor.execute(sql)  # 执行sql语句
             houses = cursor.fetchall()  # 返回多个元组
     finally:

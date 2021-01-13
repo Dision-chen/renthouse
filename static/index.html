@@ -79,7 +79,7 @@
             </div>
         </div>
 		<div class="control-entry">
-			<p>说明：请在以下城市中选择一个城市，地图跳转后请拖动一下地图,待右上角显示当前城市时即可获取数据。</p>
+			<p>说明：请在以下城市中选择一个城市并选择你的理想价格，不选则显示所有，地图跳转后请拖动一下地图,待右上角显示当前城市时即可获取数据。</p>
 		</div>
         <div class="control-entry">
             <form method="get">
@@ -89,6 +89,15 @@
                     <option value="sh">上海</option>
                     <option value="gz">广州</option>
                     <option value="sz">深圳</option>
+                </select>
+                <p>
+                <select name="price">
+                    <option value="">显示所有</option>
+                    <option value="500-1000">500-1000</option>
+                    <option value="1000-1500">1000-1500</option>
+                    <option value="1500-2000">1500-2000</option>
+                    <option value="2000-3000">2000-3000</option>
+                    <option value="3000-99999">3000以上</option>
                 </select>
                 <input type="submit" value="确定">
             </form>
@@ -103,7 +112,7 @@
         if(window.location.href.indexOf("temp")==-1)
             window.location.href=window.location.href+'?temp='+Math.random().toString();
     }
-	const params = new Map(location.search.slice(1).split('?').map(kv => kv.split('=')));
+	const params = new Map(location.search.slice(1).split('&').map(kv => kv.split('=')));
 	var city = params.get('city'); //取参数
 	var cities = {
 		  "gz" : [113.249999, 23.155319],
@@ -118,6 +127,8 @@
         center: cities[city], //地图中心
         zoom: 11 //缩放等级
     });
+    var price = params.get('price').split('?')[0]
+	document.getElementsByName('price')[0].value=price;
 
     var scale = new AMap.Scale();//添加标尺
     map.addControl(scale);
@@ -255,13 +266,13 @@
             }
         })
     }
-	//清楚已有的到达区域
+	//清除已有的到达区域
     function delWorkLocation() {
         if (polygonArray) map.remove(polygonArray);
         if (workMarker) map.remove(workMarker);
         polygonArray = [];
     }
-	//清楚现有的房源标记
+	//清除现有的房源标记
     function delRentLocation() {
         if (rentMarkerArray) map.remove(rentMarkerArray);
         rentMarkerArray = [];
