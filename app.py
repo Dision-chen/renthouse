@@ -31,8 +31,7 @@ def get_houses_db():
     try:
         with db.cursor() as cursor:  # 开启游标
             if money:
-                sql = '''SELECT url,address,money FROM houses WHERE url like "%%%s%%" and money between "%s" and 
-                "%s";''' % (city, money1, money2)  # sql语句拿数据
+                sql = '''SELECT url,address,money FROM houses WHERE url like "%%%s%%" and money between %s and %s;''' % (city, money1, money2)  # sql语句拿数据
             else:
                 sql = '''SELECT url,address,money FROM houses WHERE url like "%%%s%%";''' % city
             cursor.execute(sql)  # 执行sql语句
